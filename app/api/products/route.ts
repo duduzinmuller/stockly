@@ -17,6 +17,7 @@ export async function POST(request: Request) {
       name,
       price,
       stock,
+      status,
     },
   });
   return Response.json({}, { status: 201 });
