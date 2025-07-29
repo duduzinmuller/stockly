@@ -27,6 +27,7 @@ import { Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { NumericFormat } from "react-number-format";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "sonner";
 
 interface UpsertDialogContentProps {
   defaultValues?: UpsertProductSchema;
@@ -51,8 +52,18 @@ const UpsertDialogContent = ({
     try {
       await CreateProduct({ ...data, id: defaultValues?.id });
       onSuccess?.();
+      if (isEditing) {
+        toast.success("Produto editado com sucesso!");
+      } else {
+        toast.success("Produto criado com sucesso!");
+      }
     } catch (error) {
       console.error(error);
+      if (isEditing) {
+        toast.error("Ocorreu um erro ao editar o produto.");
+      } else {
+        toast.error("Ocorreu um erro ao criar o produto.");
+      }
     }
   };
 
