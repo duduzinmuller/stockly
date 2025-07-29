@@ -20,36 +20,22 @@ import {
   FormMessage,
 } from "@/app/_components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { PlusIcon } from "lucide-react";
+import { Loader2, PlusIcon } from "lucide-react";
 import { Input } from "@/app/_components/ui/input";
 import { useForm } from "react-hook-form";
 import { NumericFormat } from "react-number-format";
-import z from "zod";
-
-const formSchema = z.object({
-  name: z.string().trim().min(1, {
-    message: "O nome do produto é obrigatório.",
-  }),
-  price: z.number().min(0.01, {
-    message: "O preço do produto é obrigatório.",
-  }),
-  stock: z
-    .number()
-    .int()
-    .positive({
-      message: "O número de estoque deve ser positivo.",
-    })
-    .min(1, {
-      message: "A quantidade em estoque é obrigatória.",
-    }),
-});
-
-type FormSchema = z.infer<typeof formSchema>;
+import {
+  createProductSchema,
+  CreateProductSchema,
+} from "@/app/_actions/product/create-product/schema";
+import { CreateProduct } from "@/app/_actions/product/create-product";
+import { useState } from "react";
 
 const AddProductButton = () => {
-  const form = useForm<FormSchema>({
+  const [DialogOpen, setDialogOpen] = useState(false);
+  const form = useForm<CreateProductSchema>({
     shouldUnregister: true,
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(createProductSchema),
     defaultValues: {
       name: "",
       price: 0,
@@ -57,11 +43,16 @@ const AddProductButton = () => {
     },
   });
 
-  const onSubmit = (data: FormSchema) => {
-    console.log(data);
+  const onSubmit = async (data: CreateProductSchema) => {
+    try {
+      await CreateProduct(data);
+      setDialogOpen(false);
+    } catch (error) {
+      console.error(error);
+    }
   };
   return (
-    <Dialog>
+    <Dialog open={DialogOpen} onOpenChange={setDialogOpen}>
       <DialogTrigger asChild>
         <Button className="gap-2">
           <PlusIcon size={20} />
@@ -148,7 +139,16 @@ const AddProductButton = () => {
                   Cancelar
                 </Button>
               </DialogClose>
-              <Button type="submit">Salvar</Button>
+              <Button
+                type="submit"
+                disabled={form.formState.isSubmitting}
+                className="gap-1.5"
+              >
+                {form.formState.isSubmitting && (
+                  <Loader2 className="animate-spin" size={16} />
+                )}
+                Salvar
+              </Button>
             </DialogFooter>
           </form>
         </Form>
