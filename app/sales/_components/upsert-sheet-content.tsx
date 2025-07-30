@@ -36,6 +36,7 @@ import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { NumericFormat } from "react-number-format";
 import z from "zod";
+import SaleTableDropdownMenu from "./table-dropdown-menu";
 
 const formSchema = z.object({
   productId: z.string().uuid({
@@ -104,6 +105,12 @@ const UpsertSheetContent = ({
     });
     console.log(data);
     form.reset();
+  };
+
+  const onDelete = (productId: string) => {
+    setSelectedProducts((currentProduct) => {
+      return currentProduct.filter((product) => product.id !== productId);
+    });
   };
 
   const productTotal = useMemo(() => {
@@ -175,6 +182,7 @@ const UpsertSheetContent = ({
                 <TableHead>Preço Unítario</TableHead>
                 <TableHead>Quantidade</TableHead>
                 <TableHead>Total</TableHead>
+                <TableHead>Ações</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -186,6 +194,12 @@ const UpsertSheetContent = ({
                   <TableCell>
                     {formatCurrency(product.price * product.quantity)}
                   </TableCell>
+                  <TableCell>
+                    <SaleTableDropdownMenu
+                      product={product}
+                      onDelete={onDelete}
+                    />
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -193,6 +207,7 @@ const UpsertSheetContent = ({
               <TableRow>
                 <TableCell colSpan={3}>Total</TableCell>
                 <TableCell>{formatCurrency(productTotal)}</TableCell>
+                <TableCell></TableCell>
               </TableRow>
             </TableFooter>
           </Table>
