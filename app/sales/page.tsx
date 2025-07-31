@@ -1,12 +1,9 @@
-import { Button } from "../_components/ui/button";
-import { ComboboxOption } from "../_components/ui/combobox";
-import { Sheet, SheetTrigger } from "../_components/ui/sheet";
 import { getProducts } from "../_data-access/product/get-products";
-import UpsertSheetContent from "./_components/upsert-sheet-content";
+import CreateSaleButton from "./_components/create-sale-button";
 
 const SalesPage = async () => {
   const products = await getProducts();
-  const productsOptions: ComboboxOption[] = products.map((product) => ({
+  const productsOptions = products.map((product) => ({
     value: product.id,
     label: product.name,
   }));
@@ -19,15 +16,10 @@ const SalesPage = async () => {
           </span>
           <h2 className="text-xl font-semibold">Vendas</h2>
         </div>
-        <Sheet>
-          <SheetTrigger asChild>
-            <Button>Nova Venda</Button>
-          </SheetTrigger>
-          <UpsertSheetContent
-            products={products}
-            productsOptions={productsOptions}
-          />
-        </Sheet>
+        <CreateSaleButton
+          products={products}
+          productsOptions={productsOptions}
+        />
       </div>
       {/* <DataTable columns={productTableColumns} data={products} /> */}
     </div>
